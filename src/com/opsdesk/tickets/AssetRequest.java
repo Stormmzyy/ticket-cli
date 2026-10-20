@@ -13,7 +13,7 @@ public class AssetRequest extends Ticket {
     // e.g. "laptop", "monitor", "software license"
     private String assetType;
 
-    public AssetRequest(String id, String title, String status, int priority, String assetType) {
+    public AssetRequest(String id, String title, TicketStatus status, int priority, String assetType) {
         super(id, title, status, priority);
         this.assetType = assetType;
     }

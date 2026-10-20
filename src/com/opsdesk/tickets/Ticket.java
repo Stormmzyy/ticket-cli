@@ -21,7 +21,7 @@ public class Ticket implements Assignable {
 
     protected String id;
     protected String title;
-    protected String status;
+    protected TicketStatus status;
     protected int priority;      // 1 = highest, 5 = lowest
 
     // Assignee is tracked here because every ticket can be assigned.
@@ -34,7 +34,7 @@ public class Ticket implements Assignable {
      * field. Without "this.", Java thinks you mean the parameter.
      * This is the most common Java constructor pattern you'll see.
      */
-    public Ticket(String id, String title, String status, int priority) {
+    public Ticket(String id, String title, TicketStatus status, int priority) {
         this.id = id;
         this.title = title;
         this.status = status;
@@ -83,7 +83,7 @@ public class Ticket implements Assignable {
         return title;
     }
 
-    public String getStatus() {
+    public TicketStatus getStatus() {
         return status;
     }
 
@@ -91,7 +91,7 @@ public class Ticket implements Assignable {
         return priority;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(TicketStatus status) {
         this.status = status;
     }
 
