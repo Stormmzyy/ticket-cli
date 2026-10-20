@@ -151,7 +151,10 @@ public class TicketService {
      * Map each ticket to a lightweight TicketSummary (the record we created).
      *
      * .map() transforms each element — like JS array.map().
-     * The result is a list of immutable snapshots.
+     * The result is a list of shallowly immutable snapshots
+     * (fields can't be reassigned, but mutable field contents could
+     * still change — TicketSummary is safe because all its fields
+     * are String/enum, which are themselves immutable).
      */
     public List<TicketSummary> getUniqueSummaries() {
         return tickets.stream()

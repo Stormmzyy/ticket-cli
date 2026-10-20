@@ -11,10 +11,16 @@ package com.opsdesk.tickets;
  *   - A useful toString() like "TicketSummary[id=TK-001, title=..., status=OPEN]"
  *
  * In JS terms, it's like Object.freeze({ id, title, status }) but with
- * compile-time guarantees: you literally cannot change the fields.
+ * compile-time guarantees: the fields themselves cannot be reassigned.
+ *
+ * IMPORTANT: records are SHALLOWLY immutable. The fields are final so
+ * you can't reassign them, but if a field holds a mutable object (like
+ * a List), anyone with a reference to that List can still add/remove
+ * items inside it. True deep immutability requires the field types
+ * themselves to be immutable too.
  *
  * WHEN IS A RECORD THE WRONG CHOICE?
- * - When you need to mutate fields after creation (records are immutable)
+ * - When you need to mutate fields after creation (records are shallowly immutable)
  * - When you need inheritance (records can't extend other classes)
  * - When you need custom field visibility (record fields are always final)
  * That's why Ticket itself is NOT a record — it has mutable status
