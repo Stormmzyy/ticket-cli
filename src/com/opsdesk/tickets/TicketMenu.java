@@ -13,6 +13,15 @@ import java.util.Scanner;
  * - TicketService can be tested without a terminal (Part 4's TicketDemo).
  * - If we replaced the CLI with a web UI, TicketService wouldn't change.
  * - Each class has one job: Menu = user interaction, Service = logic.
+ *
+ * INPUT HANDLING NOTE:
+ * Every input is read with scanner.nextLine(), NEVER scanner.nextInt().
+ * Why? nextInt() reads only the number and leaves the newline character
+ * sitting in the buffer. The next nextLine() call then reads that leftover
+ * newline and returns an empty string, making it look like the user hit
+ * Enter without typing anything. By always using nextLine() and parsing
+ * with Integer.parseInt(), we consume the entire line every time and
+ * avoid this "phantom empty line" bug.
  */
 public class TicketMenu {
 
@@ -40,6 +49,10 @@ public class TicketMenu {
              * Every menu option that touches a ticket by id goes through
              * this try/catch. The user sees a friendly message, never
              * a stack trace. This is the "catch at the boundary" pattern.
+             *
+             * We do NOT catch bare Exception here. That would silently
+             * swallow bugs like NullPointerException or ClassCastException
+             * that should actually crash loudly so we can find and fix them.
              */
             try {
                 switch (choice) {
@@ -74,13 +87,15 @@ public class TicketMenu {
     private void handleCreate() {
         System.out.print("Title: ");
         String title = scanner.nextLine().trim();
+        if (title.isEmpty()) {
+            System.out.println("Title cannot be empty.");
+            return;
+        }
 
         System.out.print("Priority (1=highest, 5=lowest): ");
-        int priority;
-        try {
-            priority = Integer.parseInt(scanner.nextLine().trim());
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid priority. Using default (3).");
+        int priority = parseIntInRange(scanner.nextLine().trim(), 1, 5);
+        if (priority == -1) {
+            System.out.println("Invalid priority. Must be 1-5. Using default (3).");
             priority = 3;
         }
 
@@ -100,6 +115,27 @@ public class TicketMenu {
         System.out.println("Created: " + created.describe());
     }
 
+    /**
+     * Parses an integer from a string and checks it's within [min, max].
+     * Returns -1 if the string is not a valid integer or is out of range.
+     *
+     * This handles "abc", "", "999999999999" (overflow), negative numbers,
+     * and numbers outside the allowed range — all in one place.
+     */
+    private int parseIntInRange(String input, int min, int max) {
+        try {
+            int value = Integer.parseInt(input);
+            if (value < min || value > max) {
+                return -1;
+            }
+            return value;
+        } catch (NumberFormatException e) {
+            // Covers: non-numeric strings, empty strings, and numbers
+            // too large for int (like "999999999999" which overflows)
+            return -1;
+        }
+    }
+
     private void handleList() {
         List<Ticket> all = service.sortedByPriority();
         if (all.isEmpty()) {
@@ -116,8 +152,18 @@ public class TicketMenu {
     private void handleAssign() {
         System.out.print("Ticket ID: ");
         String id = scanner.nextLine().trim();
+        if (id.isEmpty()) {
+            System.out.println("Ticket ID cannot be empty.");
+            return;
+        }
+
         System.out.print("Assign to: ");
         String user = scanner.nextLine().trim();
+        if (user.isEmpty()) {
+            System.out.println("User name cannot be empty.");
+            return;
+        }
+
         service.assignTicket(id, user);
         System.out.println("Assigned " + id + " to " + user);
     }
@@ -125,6 +171,11 @@ public class TicketMenu {
     private void handleChangeStatus() {
         System.out.print("Ticket ID: ");
         String id = scanner.nextLine().trim();
+        if (id.isEmpty()) {
+            System.out.println("Ticket ID cannot be empty.");
+            return;
+        }
+
         System.out.println("Statuses: OPEN, IN_PROGRESS, RESOLVED, CLOSED");
         System.out.print("New status: ");
         String statusStr = scanner.nextLine().trim().toUpperCase();
