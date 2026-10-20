@@ -92,9 +92,9 @@ public class CollectionsDemo {
         // 4. MAP<STRING, LIST<TICKET>> — group tickets by status
         // ============================================================
         // This is like JS's reduce() building an object of arrays.
-        // The key is the status string, the value is a list of tickets
+        // The key is the TicketStatus enum, the value is a list of tickets
         // with that status. Useful for dashboards: "show me all OPEN tickets."
-        System.out.println("\n=== 4. Map<String, List<Ticket>> — group by status ===");
+        System.out.println("\n=== 4. Map<TicketStatus, List<Ticket>> — group by status ===");
 
         Map<TicketStatus, List<Ticket>> byStatus = new HashMap<>();
         for (Ticket t : tickets) {
