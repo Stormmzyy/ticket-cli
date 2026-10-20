@@ -1,3 +1,5 @@
+package com.opsdesk.warmup;
+
 public class Warmup {
 
     // Exercise 1: FizzBuzz from 1 to 20
