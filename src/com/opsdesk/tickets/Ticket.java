@@ -1,5 +1,7 @@
 package com.opsdesk.tickets;
 
+import java.util.Objects;
+
 /**
  * Base class for all ticket types.
  *
@@ -91,5 +93,45 @@ public class Ticket implements Assignable {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    // --- equals and hashCode: identity by ticket id ---
+
+    /**
+     * Two tickets are "equal" if they have the same id.
+     *
+     * WHY override this? By default, Java's equals() checks if two
+     * variables point to the SAME object in memory (like === in JS).
+     * But we want two different Ticket objects with id "TK-001" to
+     * count as the same ticket — e.g. when deduplicating in a Set.
+     *
+     * The pattern below is the standard Java equals() recipe:
+     * 1. Same object in memory? Return true immediately.
+     * 2. Null or different class? Return false.
+     * 3. Cast to Ticket and compare the field(s) that define identity.
+     *
+     * "instanceof" checks if an object is a particular type.
+     * It's like JS's instanceof but used more carefully in Java.
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;                    // same reference
+        if (!(obj instanceof Ticket)) return false;      // null or wrong type
+        Ticket other = (Ticket) obj;                     // safe cast
+        return Objects.equals(this.id, other.id);        // compare by id
+    }
+
+    /**
+     * hashCode() MUST agree with equals(). If two tickets are equal
+     * (same id), they MUST return the same hash code. Otherwise,
+     * HashMap and HashSet put them in different buckets and can never
+     * find the match — your "equal" objects silently become duplicates.
+     *
+     * Objects.hash() is a convenience method that computes a hash
+     * from whatever fields you pass it.
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
