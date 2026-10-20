@@ -18,7 +18,7 @@ public class SupportTicket extends Ticket {
      * Then we set our own extra field. Java requires super() to be the
      * very first line — you can't do anything before the parent is built.
      */
-    public SupportTicket(String id, String title, String status, int priority, String urgencyLevel) {
+    public SupportTicket(String id, String title, TicketStatus status, int priority, String urgencyLevel) {
         super(id, title, status, priority);
         this.urgencyLevel = urgencyLevel;
     }

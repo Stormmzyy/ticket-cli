@@ -54,10 +54,10 @@ public class Main {
          */
         List<Ticket> tickets = new ArrayList<>();
 
-        tickets.add(new SupportTicket("TK-001", "Login page broken", "OPEN", 1, "critical"));
-        tickets.add(new SupportTicket("TK-002", "Slow dashboard load", "OPEN", 3, "normal"));
-        tickets.add(new AssetRequest("TK-003", "New laptop for intern", "OPEN", 2, "laptop"));
-        tickets.add(new AssetRequest("TK-004", "Photoshop license", "OPEN", 4, "software license"));
+        tickets.add(new SupportTicket("TK-001", "Login page broken", TicketStatus.OPEN, 1, "critical"));
+        tickets.add(new SupportTicket("TK-002", "Slow dashboard load", TicketStatus.OPEN, 3, "normal"));
+        tickets.add(new AssetRequest("TK-003", "New laptop for intern", TicketStatus.OPEN, 2, "laptop"));
+        tickets.add(new AssetRequest("TK-004", "Photoshop license", TicketStatus.OPEN, 4, "software license"));
 
         // One loop, different describe() output for each type
         for (Ticket ticket : tickets) {

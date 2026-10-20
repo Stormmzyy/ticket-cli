@@ -29,11 +29,11 @@ public class CollectionsDemo {
         System.out.println("=== 1. List<Ticket> ===");
 
         List<Ticket> tickets = new ArrayList<>();
-        tickets.add(new SupportTicket("TK-001", "Login page broken", "OPEN", 1, "critical"));
-        tickets.add(new SupportTicket("TK-002", "Slow dashboard", "IN_PROGRESS", 3, "normal"));
-        tickets.add(new AssetRequest("TK-003", "New laptop for intern", "OPEN", 2, "laptop"));
-        tickets.add(new AssetRequest("TK-004", "Photoshop license", "RESOLVED", 4, "software license"));
-        tickets.add(new SupportTicket("TK-005", "Email not sending", "OPEN", 1, "critical"));
+        tickets.add(new SupportTicket("TK-001", "Login page broken", TicketStatus.OPEN, 1, "critical"));
+        tickets.add(new SupportTicket("TK-002", "Slow dashboard", TicketStatus.IN_PROGRESS, 3, "normal"));
+        tickets.add(new AssetRequest("TK-003", "New laptop for intern", TicketStatus.OPEN, 2, "laptop"));
+        tickets.add(new AssetRequest("TK-004", "Photoshop license", TicketStatus.RESOLVED, 4, "software license"));
+        tickets.add(new SupportTicket("TK-005", "Email not sending", TicketStatus.OPEN, 1, "critical"));
 
         System.out.println("All tickets (insertion order):");
         for (Ticket t : tickets) {
@@ -96,7 +96,7 @@ public class CollectionsDemo {
         // with that status. Useful for dashboards: "show me all OPEN tickets."
         System.out.println("\n=== 4. Map<String, List<Ticket>> — group by status ===");
 
-        Map<String, List<Ticket>> byStatus = new HashMap<>();
+        Map<TicketStatus, List<Ticket>> byStatus = new HashMap<>();
         for (Ticket t : tickets) {
             // computeIfAbsent: if the key doesn't exist yet, create
             // an empty list for it. Then add the ticket to that list.
@@ -104,7 +104,7 @@ public class CollectionsDemo {
             byStatus.computeIfAbsent(t.getStatus(), k -> new ArrayList<>()).add(t);
         }
 
-        for (Map.Entry<String, List<Ticket>> entry : byStatus.entrySet()) {
+        for (Map.Entry<TicketStatus, List<Ticket>> entry : byStatus.entrySet()) {
             System.out.println(entry.getKey() + " (" + entry.getValue().size() + " tickets):");
             for (Ticket t : entry.getValue()) {
                 System.out.println("  " + t.describe());
@@ -138,8 +138,8 @@ public class CollectionsDemo {
         // With our overrides, the Set recognizes them as the same ticket.
         System.out.println("\n=== 6. equals()/hashCode() proof ===");
 
-        Ticket original = new SupportTicket("TK-001", "Login page broken", "OPEN", 1, "critical");
-        Ticket duplicate = new SupportTicket("TK-001", "Login page broken", "OPEN", 1, "critical");
+        Ticket original = new SupportTicket("TK-001", "Login page broken", TicketStatus.OPEN, 1, "critical");
+        Ticket duplicate = new SupportTicket("TK-001", "Login page broken", TicketStatus.OPEN, 1, "critical");
 
         System.out.println("original == duplicate (same object?): " + (original == duplicate));
         System.out.println("original.equals(duplicate) (same id?): " + original.equals(duplicate));
