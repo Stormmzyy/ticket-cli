@@ -14,7 +14,7 @@ import java.util.Optional;
  * The pattern is the same: call a method, assert something about the
  * result. We're doing it by hand so there's no extra dependency.
  */
-public class TicketServiceDemo {
+public class TicketDemo {
 
     private static int passed = 0;
     private static int failed = 0;

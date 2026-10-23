@@ -19,7 +19,22 @@ java -cp out com.opsdesk.tickets.Main
 **Run the automated service demo** (no terminal interaction needed):
 
 ```
-java -cp out com.opsdesk.tickets.TicketServiceDemo
+java -cp out com.opsdesk.tickets.TicketDemo
+```
+
+Expected output:
+
+```
+=== TicketService Demo (no terminal needed) ===
+
+PASS: Create ticket
+PASS: Find existing ticket (Optional present)
+PASS: Find missing ticket (Optional empty)
+PASS: Assign ticket
+PASS: Change status
+PASS: TicketNotFoundException thrown for missing id
+
+--- Results: 6 passed, 0 failed ---
 ```
 
 **Run the collections demo** (standalone exercise from Part 2):
@@ -45,7 +60,7 @@ java -cp out com.opsdesk.tickets.CollectionsDemo
 | `TicketStore` | Reads and writes tickets to a plain-text file using `java.nio.file`. |
 | `TicketMenu` | Interactive CLI menu — reads from Scanner, prints to System.out, delegates logic to TicketService. |
 | `TicketNotFoundException` | Unchecked exception thrown when a ticket id doesn't exist. |
-| `TicketServiceDemo` | Automated demo exercising TicketService with no terminal — prints PASS/FAIL for each case. |
+| `TicketDemo` | Automated demo exercising TicketService with no terminal — prints PASS/FAIL for each case. |
 | `CollectionsDemo` | Standalone exercise demonstrating List, Set, Map, Comparator, and equals/hashCode. |
 
 ### `com.opsdesk.warmup`
@@ -75,7 +90,7 @@ If the file doesn't exist on startup (first run), the app starts with an empty l
 ## Design decisions
 
 **Why does TicketService have no I/O?**
-TicketService knows nothing about Scanner, System.out, or files. This means you can test it without a terminal (TicketServiceDemo proves this), swap the CLI for a web UI without changing the service, and keep each class focused on one job. TicketMenu handles user interaction, TicketStore handles file persistence, and TicketService handles logic.
+TicketService knows nothing about Scanner, System.out, or files. This means you can test it without a terminal (TicketDemo proves this), swap the CLI for a web UI without changing the service, and keep each class focused on one job. TicketMenu handles user interaction, TicketStore handles file persistence, and TicketService handles logic.
 
 **Why does `findTicket` return Optional while `getTicket` throws?**
 They serve different callers. `findTicket` returns `Optional<Ticket>` for callers who want to handle the missing case gracefully (check `.isPresent()`, use `.orElse()`). `getTicket` throws `TicketNotFoundException` for callers who consider a missing ticket an error — it's a convenience wrapper that calls `findTicket` internally.
