@@ -26,10 +26,12 @@ import java.util.Scanner;
 public class TicketMenu {
 
     private final TicketService service;
+    private final TicketStore store;
     private final Scanner scanner;
 
-    public TicketMenu(TicketService service) {
+    public TicketMenu(TicketService service, TicketStore store) {
         this.service = service;
+        this.store = store;
         this.scanner = new Scanner(System.in);
     }
 
@@ -84,11 +86,28 @@ public class TicketMenu {
         System.out.print("Choose: ");
     }
 
+    /**
+     * WHY REJECT PIPES INSTEAD OF QUOTING?
+     * Our file format uses | as the delimiter. We could support pipes
+     * in text by adding CSV-style quoting (wrap fields in quotes, escape
+     * quotes inside), but that adds real parsing complexity for a rare
+     * edge case. Rejecting pipes at input is simpler, harder to get wrong,
+     * and teaches the principle: validate at the boundary so the rest of
+     * the system can trust its data.
+     */
+    private boolean containsPipe(String input) {
+        return input.contains("|");
+    }
+
     private void handleCreate() {
         System.out.print("Title: ");
         String title = scanner.nextLine().trim();
         if (title.isEmpty()) {
             System.out.println("Title cannot be empty.");
+            return;
+        }
+        if (containsPipe(title)) {
+            System.out.println("Title cannot contain the '|' character (used as file delimiter).");
             return;
         }
 
@@ -106,12 +125,21 @@ public class TicketMenu {
         if ("support".equalsIgnoreCase(type)) {
             System.out.print("Urgency level (critical/normal/low): ");
             extra = scanner.nextLine().trim();
+            if (containsPipe(extra)) {
+                System.out.println("Urgency level cannot contain '|'.");
+                return;
+            }
         } else if ("asset".equalsIgnoreCase(type)) {
             System.out.print("Asset type (laptop/monitor/software license/etc): ");
             extra = scanner.nextLine().trim();
+            if (containsPipe(extra)) {
+                System.out.println("Asset type cannot contain '|'.");
+                return;
+            }
         }
 
         Ticket created = service.addTicket(title, priority, type, extra);
+        store.save(service.listAll());  // persist immediately so a crash doesn't lose data
         System.out.println("Created: " + created.describe());
     }
 
@@ -163,8 +191,13 @@ public class TicketMenu {
             System.out.println("User name cannot be empty.");
             return;
         }
+        if (containsPipe(user)) {
+            System.out.println("User name cannot contain '|'.");
+            return;
+        }
 
         service.assignTicket(id, user);
+        store.save(service.listAll());
         System.out.println("Assigned " + id + " to " + user);
     }
 
@@ -183,6 +216,7 @@ public class TicketMenu {
         try {
             TicketStatus newStatus = TicketStatus.valueOf(statusStr);
             service.changeStatus(id, newStatus);
+            store.save(service.listAll());
             System.out.println("Updated " + id + " to " + newStatus);
         } catch (IllegalArgumentException e) {
             System.out.println("Invalid status: " + statusStr);

@@ -162,13 +162,31 @@ public class TicketService {
                 .collect(Collectors.toList());
     }
 
-    /** Allows setting the next id counter (used when loading from file). */
-    public void setNextId(int nextId) {
-        this.nextId = nextId;
-    }
+    /**
+     * Replaces the in-memory ticket list with previously saved tickets.
+     * Called once at startup after TicketStore.load().
+     *
+     * Also recomputes nextId by finding the highest existing TK-nnn id
+     * and adding 1, so new tickets don't collide with loaded ones.
+     */
+    public void loadTickets(List<Ticket> loaded) {
+        tickets.clear();
+        tickets.addAll(loaded);
 
-    /** Returns the current next id value. */
-    public int getNextId() {
-        return nextId;
+        // Find the highest numeric id among loaded tickets.
+        // "TK-003" -> 3, "TK-017" -> 17, etc.
+        int maxId = 0;
+        for (Ticket t : loaded) {
+            String numPart = t.getId().replace("TK-", "");
+            try {
+                int num = Integer.parseInt(numPart);
+                if (num > maxId) {
+                    maxId = num;
+                }
+            } catch (NumberFormatException e) {
+                // Non-standard id format — skip it
+            }
+        }
+        this.nextId = maxId + 1;
     }
 }
